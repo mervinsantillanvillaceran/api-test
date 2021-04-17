@@ -1,0 +1,29 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class UserSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // create default user for admin
+        DB::table('users')->insert([
+            'name' => 'admin',
+            'user_name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('12345'),
+            'user_role' => 'admin',
+            'avatar' => '',
+            'registered_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+}
