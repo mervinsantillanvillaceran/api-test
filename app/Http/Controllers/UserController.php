@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -19,5 +20,25 @@ class UserController extends Controller
         $user->save();
 
         return response()->json('Successfully validated.');
+    }
+
+    public function update(Request $request)
+    {
+        $user = auth()->user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:4|max:20',
+            'user_name' => "required|min:4|max:20|unique:App\Models\User,user_name,{$user->id}",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user->name = $validator->validated()['name'];
+        $user->user_name = $validator->validated()['user_name'];
+        $user->save();
+
+        return response()->json('Successfully updated.');
     }
 }

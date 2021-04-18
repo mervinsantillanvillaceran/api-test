@@ -36,4 +36,5 @@ Route::group([
     'prefix' => 'user'
 ], function ($router) {
     Route::post('/validate', [UserController::class, 'confirm'])->name('validate');
+    Route::put('/update', [UserController::class, 'update'])->name('update');
 });
