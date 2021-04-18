@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -33,5 +34,13 @@ class AuthController extends Controller
             'expires_in' => auth('api')->factory()->getTTL() * 10080,
             'user' => auth('api')->user()
         ]);
+    }
+
+    public function verifyToken(Request $request)
+    {
+        $token = $request->get('invitation_token');
+        $user = User::where('invitation_token', $token)->get();
+
+        return response()->json($user);
     }
 }

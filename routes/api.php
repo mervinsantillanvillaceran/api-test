@@ -17,10 +17,10 @@ use App\Http\Controllers\InvitationController;
 */
 
 Route::group([
-    'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/verifyToken', [AuthController::class, 'verifyToken'])->name('verify-token');
 });
 
 Route::group([
