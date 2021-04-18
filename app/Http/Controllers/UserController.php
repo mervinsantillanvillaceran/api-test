@@ -29,14 +29,19 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:4|max:20',
             'user_name' => "required|min:4|max:20|unique:App\Models\User,user_name,{$user->id}",
+            'avatar' => 'image|mimes:jpeg,png,jpg',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        $avatar = time() . '.' . $request->avatar->extension();
+        $request->avatar->move(public_path('images'), $avatar);
+
         $user->name = $validator->validated()['name'];
         $user->user_name = $validator->validated()['user_name'];
+        $user->avatar = $avatar;
         $user->save();
 
         return response()->json('Successfully updated.');
