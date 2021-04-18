@@ -21,6 +21,7 @@ Route::group([
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/verifyToken', [AuthController::class, 'verifyToken'])->name('verify-token');
+    Route::post('/register/{id}', [AuthController::class, 'save'])->name('register-user');
 });
 
 Route::group([

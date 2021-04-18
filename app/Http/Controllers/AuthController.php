@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use App\Jobs\SendEmailUserPinJob;
 
 class AuthController extends Controller
 {
@@ -42,5 +44,45 @@ class AuthController extends Controller
         $user = User::where('invitation_token', $token)->get();
 
         return response()->json($user);
+    }
+
+    public function save(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json('User not found.', 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'user_name' => 'required|min:4|max:20',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $pin = mt_rand(100000, 999999);
+
+        $user->user_name = $validator->validated()['user_name'];
+        $user->password = Hash::make($validator->validated()['password']);
+        $user->registered_at = date('Y-m-d H:i:s');
+        $user->pin = $pin;
+        $user->save();
+
+        dispatch(new SendEmailUserPinJob([
+            'email' => $user->email,
+            'pin' => $pin
+        ]));
+
+        if (!$token = auth('api')->attempt([
+            'email' => $user->email,
+            'password' => $validator->validated()['password']
+        ])) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->createNewToken($token);
     }
 }
