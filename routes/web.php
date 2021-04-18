@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/register', function () {
+    // should return registration page
     return view('welcome');
-});
+})->name('register');

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +21,10 @@ Route::group([
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+});
+
+Route::group([
+    'middleware' => ['auth:api', 'admin'],
+], function ($router) {
+    Route::post('/invite', [InvitationController::class, 'index'])->name('invite');
 });
